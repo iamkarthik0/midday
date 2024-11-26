@@ -10,7 +10,7 @@ const SLACK_STATE_SECRET = process.env.NEXT_PUBLIC_SLACK_STATE_SECRET;
 const SLACK_SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET;
 
 if (!SLACK_CLIENT_ID) {
-  throw new Error("SLACK_CLIENT_ID is not defined");
+  throw new Error("SLACK_CLIENT_ID is not defined ");
 }
 
 if (!SLACK_CLIENT_SECRET) {

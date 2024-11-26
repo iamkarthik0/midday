@@ -18,6 +18,7 @@ const resend = new Resend(env.RESEND_API_KEY);
 
 // NOTE: This is trigger from supabase database webhook
 export async function POST(req: Request) {
+   console.log("gasfaspfasp")
   const text = await req.clone().text();
   const signature = headers().get("x-supabase-signature");
 

@@ -3,33 +3,38 @@ import { createClient } from "@midday/supabase/server";
 import { createI18nMiddleware } from "next-international/middleware";
 import { type NextRequest, NextResponse } from "next/server";
 
+// Internationalization middleware setup for English language
 const I18nMiddleware = createI18nMiddleware({
-  locales: ["en"],
-  defaultLocale: "en",
-  urlMappingStrategy: "rewrite",
+  locales: ["en"], // Supported languages
+  defaultLocale: "en", // Default language
+  urlMappingStrategy: "rewrite", // URL handling strategy
 });
 
 export async function middleware(request: NextRequest) {
+  // Initialize response with session update and i18n handling
   const response = await updateSession(request, I18nMiddleware(request));
   const supabase = createClient();
   const url = new URL("/", request.url);
   const nextUrl = request.nextUrl;
 
+  // Extract locale from URL path
   const pathnameLocale = nextUrl.pathname.split("/", 2)?.[1];
 
-  // Remove the locale from the pathname
+  // Remove locale prefix from pathname for cleaner routing
   const pathnameWithoutLocale = pathnameLocale
     ? nextUrl.pathname.slice(pathnameLocale.length + 1)
     : nextUrl.pathname;
 
-  // Create a new URL without the locale in the pathname
+  // Create clean URL without locale
   const newUrl = new URL(pathnameWithoutLocale || "/", request.url);
 
+  // Get user session from Supabase
   const {
     data: { session },
   } = await supabase.auth.getSession();
 
-  // Not authenticated
+  // Authentication check
+  // Redirect to login if user is not authenticated and trying to access protected routes
   if (
     !session &&
     newUrl.pathname !== "/login" &&
@@ -42,6 +47,7 @@ export async function middleware(request: NextRequest) {
 
     const url = new URL("/login", request.url);
 
+    // Preserve return_to parameter for post-login redirect
     if (encodedSearchParams) {
       url.searchParams.append("return_to", encodedSearchParams);
     }
@@ -49,14 +55,15 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // If authenticated but no full_name redirect to user setup page
+  // User setup check
+  // Redirect to setup if authenticated user hasn't completed profile
   if (
     newUrl.pathname !== "/setup" &&
     newUrl.pathname !== "/teams/create" &&
     session &&
     !session?.user?.user_metadata?.full_name
   ) {
-    // Check if the URL contains an invite code
+    // Special handling for team invites
     const inviteCodeMatch = newUrl.pathname.startsWith("/teams/invite/");
 
     if (inviteCodeMatch) {
@@ -66,10 +73,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(`${url.origin}/setup`);
   }
 
+  // MFA (Multi-Factor Authentication) check
   const { data: mfaData } =
     await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
 
-  // Enrolled for mfa but not verified
+  // Redirect to MFA verification if required but not completed
   if (
     mfaData &&
     mfaData.nextLevel === "aal2" &&
@@ -82,6 +90,7 @@ export async function middleware(request: NextRequest) {
   return response;
 }
 
+// Configure middleware to run on all routes except static assets and API routes
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico|api|monitoring).*)"],
 };

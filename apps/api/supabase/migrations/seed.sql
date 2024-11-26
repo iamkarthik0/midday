@@ -1,3 +1,3 @@
 
 SELECT vault.create_secret('http://localhost:3001/api', 'WEBHOOK_ENDPOINT', 'Webhook endpoint URL');
-SELECT vault.create_secret('6c369443-1a88-444e-b459-7e662c1fff9e', 'WEBHOOK_SECRET', 'Webhook secret key');
+SELECT vault.create_secret('b0e7b4d4-20da-4821-b187-05d70372aa7f', 'skiller', 'Webhook secret key');

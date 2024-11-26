@@ -10,6 +10,8 @@ type Props = {
   currencies: string[];
 };
 
+
+
 export async function Inbox({ ascending, query, currencies }: Props) {
   const supabase = createClient();
   const user = await getUser();

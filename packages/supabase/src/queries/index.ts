@@ -22,19 +22,15 @@ function transactionCategory(transaction) {
 export function getPercentageIncrease(a: number, b: number) {
   return a > 0 && b > 0 ? Math.abs(((a - b) / b) * 100).toFixed() : 0;
 }
-
 export async function getUserQuery(supabase: Client, userId: string) {
-  return supabase
+  const result = await supabase
     .from("users")
-    .select(
-      `
-      *,
-      team:team_id(*)
-    `,
-    )
+    .select("*")
     .eq("id", userId)
     .single()
     .throwOnError();
+    console.log(result)
+  return result;
 }
 
 export async function getCurrentUserTeamQuery(supabase: Client) {

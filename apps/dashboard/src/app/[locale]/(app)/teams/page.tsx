@@ -17,6 +17,8 @@ export default async function Teams() {
   const supabase = createClient();
   const user = await getUser();
 
+  console.log(user)
+
   const teams = await getTeamsByUserIdQuery(supabase, user?.data?.id);
 
   if (!teams?.data?.length) {
@@ -51,7 +53,7 @@ export default async function Teams() {
           <SelectTeamTable data={teams.data} />
 
           <div className="text-center mt-8 border-t-[1px] border-border pt-6">
-            <Link href="/teams/create" className="text-sm">
+            <Link href="/" className="text-sm">
               Create team
             </Link>
           </div>

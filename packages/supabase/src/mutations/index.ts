@@ -378,12 +378,17 @@ type CreateTeamParams = {
 };
 
 export async function createTeam(supabase: Client, params: CreateTeamParams) {
-  const { data } = await supabase.rpc("create_team_v2", {
-    name: params.name,
-    currency: params.currency,
-  });
+  try {
+    const { data } = await supabase.rpc("create_team", {
+      name: params.name,
+      // currency: params.currency,
+    });
 
-  return data;
+    return data;
+  } catch (error) {
+    console.error("Error creating team:", error);
+    throw error;
+  }
 }
 
 type LeaveTeamParams = {

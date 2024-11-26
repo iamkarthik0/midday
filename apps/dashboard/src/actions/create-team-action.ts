@@ -18,20 +18,28 @@ export const createTeamAction = authActionClient
     },
   })
   .action(async ({ parsedInput: { name, redirectTo }, ctx: { supabase } }) => {
-    const currency = getCurrency();
-    const team_id = await createTeam(supabase, { name, currency });
-    const user = await updateUser(supabase, { team_id });
+    try {
+      const currency = getCurrency();
+      const team_id = await createTeam(supabase, { name, currency });
+      const user = await updateUser(supabase, { team_id });
 
-    if (!user?.data) {
-      return;
+
+    
+      if (!user?.data) {
+        console.error("User data not found after update");
+        return;
+      }
+
+      revalidateTag(`user_${user.data.id}`);
+      revalidateTag(`teams_${user.data.id}`);
+
+      if (redirectTo) {
+        redirect(redirectTo);
+      }
+
+      return team_id;
+    } catch (error) {
+      console.error("Error in createTeamAction:", error);
+      throw error;
     }
-
-    revalidateTag(`user_${user.data.id}`);
-    revalidateTag(`teams_${user.data.id}`);
-
-    if (redirectTo) {
-      redirect(redirectTo);
-    }
-
-    return team_id;
   });

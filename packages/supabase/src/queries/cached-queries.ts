@@ -49,6 +49,7 @@ export const getTransactions = async (
 ) => {
   const supabase = createClient();
   const user = await getUser();
+
   const teamId = user?.data?.team_id;
 
   if (!teamId) {
@@ -75,10 +76,12 @@ export const getSession = cache(async () => {
 });
 
 // Cache per request and revalidate every 30 minutes
-export const getUser = cache(async () => {
+export const getUser = async () => {
   const {
     data: { session },
   } = await getSession();
+
+
 
   const userId = session?.user?.id;
 
@@ -86,11 +89,12 @@ export const getUser = cache(async () => {
     return null;
   }
 
-  const supabase = createClient();
 
+  const supabase = createClient();
   return unstable_cache(
     async () => {
-      return getUserQuery(supabase, userId);
+  
+     return await getUserQuery(supabase, userId);
     },
     ["user", userId],
     {
@@ -99,7 +103,7 @@ export const getUser = cache(async () => {
       revalidate: 1800,
     },
   )();
-});
+};
 
 export const getTeamUser = async () => {
   const supabase = createClient();

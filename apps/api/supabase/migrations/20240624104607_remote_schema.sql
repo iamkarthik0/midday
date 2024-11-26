@@ -1698,7 +1698,7 @@ GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "anon";
 GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "service_role";
 
-GRANT ALL ON TABLE "public"."inbox" TO "anon";
+GRANT ALL ON TABLE "public"."inbox" TO "anon";  
 GRANT ALL ON TABLE "public"."inbox" TO "authenticated";
 GRANT ALL ON TABLE "public"."inbox" TO "service_role";
 

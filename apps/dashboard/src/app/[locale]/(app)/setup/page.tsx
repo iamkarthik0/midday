@@ -10,8 +10,10 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
+
   const { data } = await getUser();
 
+ 
   if (!data?.id) {
     return redirect("/");
   }
