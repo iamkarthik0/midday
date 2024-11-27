@@ -12,7 +12,7 @@ import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
-export const maxDuration = 300; // 5min
+export const maxDuration = 60; // 5min
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
