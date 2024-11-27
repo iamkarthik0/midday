@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const contentType = "image/png";
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 const CDN_URL = "https://cdn.midday.ai";
 
