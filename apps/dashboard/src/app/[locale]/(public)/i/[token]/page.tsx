@@ -2,13 +2,18 @@ import CustomerHeader from "@/components/customer-header";
 import InvoiceToolbar from "@/components/invoice-toolbar";
 import { InvoiceCommentsSheet } from "@/components/sheets/invoice-comments";
 import { UTCDate } from "@date-fns/utc";
-import { HtmlTemplate } from "@midday/invoice/templates/html";
 import { verify } from "@midday/invoice/token";
 import { getInvoiceQuery } from "@midday/supabase/queries";
 import { createClient } from "@midday/supabase/server";
 import { waitUntil } from "@vercel/functions";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import dynamic from "next/dynamic";
+
+const HtmlTemplate = dynamic(
+  () => import("@midday/invoice/templates/html").then(mod => mod.HtmlTemplate),
+  { ssr: true }
+);
 
 export async function generateMetadata({
   params,
@@ -35,15 +40,6 @@ export async function generateMetadata({
     return {
       title,
       description,
-      openGraph: {
-        title,
-        description,
-      },
-      twitter: {
-        card: "summary",
-        title,
-        description,
-      },
       robots: {
         index: false,
         follow: false,

@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const contentType = "image/png";
-export const runtime = "nodejs";
+export const runtime = "edge";
 
 const CDN_URL = "https://cdn.midday.ai";
 
@@ -21,21 +21,23 @@ export default async function Image({ params }: { params: { token: string } }) {
   }
 
   // Load fonts in parallel
-  const [geistMonoRegular, geistSansRegular] = await Promise.all([
-    fetch(`${CDN_URL}/fonts/GeistMono/og/GeistMono-Regular.otf`).then(res => res.arrayBuffer()),
-    fetch(`${CDN_URL}/fonts/Geist/og/Geist-Regular.otf`).then(res => res.arrayBuffer())
+  const [geistMonoRegular] = await Promise.all([
+    fetch(`${CDN_URL}/fonts/GeistMono/og/GeistMono-Regular.otf`).then(res => res.arrayBuffer())
   ]);
 
-  // Dynamically import OG template only when needed
-  const { OgTemplate, isValidLogoUrl } = await import("@midday/invoice");
-  const logoUrl = `https://img.logo.dev/${invoice.customer?.website}?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ&size=60`;
-  const isValidLogo = await isValidLogoUrl(logoUrl);
+  // Dynamically import only the OgTemplate component
+  const { OgTemplate } = await import("@midday/invoice/og-template");
+  
+  // Simplified logo handling
+  const logoUrl = invoice.customer?.website ? 
+    `https://img.logo.dev/${invoice.customer.website}?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ&size=60` : 
+    null;
 
   return new ImageResponse(
     <OgTemplate
       {...invoice}
       name={invoice.customer_name || invoice.customer?.name}
-      isValidLogo={isValidLogo}
+      isValidLogo={!!logoUrl}
       logoUrl={logoUrl}
     />,
     {
@@ -47,13 +49,7 @@ export default async function Image({ params }: { params: { token: string } }) {
           data: geistMonoRegular,
           style: "normal",
           weight: 400,
-        },
-        {
-          name: "GeistSans",
-          data: geistSansRegular,
-          style: "normal",
-          weight: 400,
-        },
+        }
       ],
     },
   );
