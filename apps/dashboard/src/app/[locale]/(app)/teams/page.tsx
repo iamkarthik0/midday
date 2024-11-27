@@ -17,7 +17,7 @@ export default async function Teams() {
   const supabase = createClient();
   const user = await getUser();
 
-  console.log(user)
+
 
   const teams = await getTeamsByUserIdQuery(supabase, user?.data?.id);
 

@@ -74,7 +74,8 @@ export default async function Layout({
   const countryCode = getCountryCode();
   const currency = getCurrency();
 
-  if (!user?.data?.team) {
+  console.log(user)
+  if (!user?.data?.team_id) {
     redirect("/teams");
   }
 
