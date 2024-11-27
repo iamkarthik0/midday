@@ -1,4 +1,9 @@
 import { ImageResponse } from "next/og";
+import dynamic from 'next/dynamic';
+
+const OgTemplate = dynamic(() => 
+  import("@midday/invoice/components/og-template").then(mod => mod.OgTemplate)
+);
 
 export const contentType = "image/png";
 export const runtime = "edge";
@@ -25,9 +30,6 @@ export default async function Image({ params }: { params: { token: string } }) {
     fetch(`${CDN_URL}/fonts/GeistMono/og/GeistMono-Regular.otf`).then(res => res.arrayBuffer())
   ]);
 
-  // Dynamically import only the OgTemplate component
-  const { OgTemplate } = await import("@midday/invoice/og-template");
-  
   // Simplified logo handling
   const logoUrl = invoice.customer?.website ? 
     `https://img.logo.dev/${invoice.customer.website}?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ&size=60` : 
