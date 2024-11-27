@@ -27,16 +27,16 @@ export default async function Image({ params }: { params: { token: string } }) {
   //   `${CDN_URL}/fonts/Geist/og/Geist-Regular.otf`,
   // ).then((res) => res.arrayBuffer());
 
-  const logoUrl = `https://img.logo.dev/${invoice.customer?.website}?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ&size=20`;
+  // const logoUrl = `https://img.logo.dev/${invoice.customer?.website}?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ&size=20`;
 
-  const isValidLogo = await isValidLogoUrl(logoUrl);
+  // const isValidLogo = await isValidLogoUrl(logoUrl);
 
   return new ImageResponse(
     <OgTemplate
       {...invoice}
       name={invoice.customer_name || invoice.customer?.name}
-      isValidLogo={isValidLogo}
-      logoUrl={logoUrl}
+      isValidLogo={true}
+      logoUrl={"logoUrl"}
     />,
     {
       width: 1200,
