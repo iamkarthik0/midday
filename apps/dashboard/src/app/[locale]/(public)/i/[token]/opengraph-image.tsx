@@ -6,8 +6,7 @@ export const runtime = "edge";
 const CDN_URL = "https://cdn.midday.ai";
 
 export default async function Image({ params }: { params: { token: string } }) {
-  // Dynamically import heavy dependencies
-  const { OgTemplate, isValidLogoUrl } = await import("@midday/invoice");
+  // Import only what we need
   const { verify } = await import("@midday/invoice/token");
   const { getInvoiceQuery } = await import("@midday/supabase/queries");
   const { createClient } = await import("@midday/supabase/server");
@@ -21,16 +20,15 @@ export default async function Image({ params }: { params: { token: string } }) {
     return new Response("Not found", { status: 404 });
   }
 
-  const geistMonoRegular = fetch(
-    `${CDN_URL}/fonts/GeistMono/og/GeistMono-Regular.otf`,
-  ).then((res) => res.arrayBuffer());
+  // Load fonts in parallel
+  const [geistMonoRegular, geistSansRegular] = await Promise.all([
+    fetch(`${CDN_URL}/fonts/GeistMono/og/GeistMono-Regular.otf`).then(res => res.arrayBuffer()),
+    fetch(`${CDN_URL}/fonts/Geist/og/Geist-Regular.otf`).then(res => res.arrayBuffer())
+  ]);
 
-  const geistSansRegular = fetch(
-    `${CDN_URL}/fonts/Geist/og/Geist-Regular.otf`,
-  ).then((res) => res.arrayBuffer());
-
+  // Dynamically import OG template only when needed
+  const { OgTemplate, isValidLogoUrl } = await import("@midday/invoice");
   const logoUrl = `https://img.logo.dev/${invoice.customer?.website}?token=pk_X-1ZO13GSgeOoUrIuJ6GMQ&size=60`;
-
   const isValidLogo = await isValidLogoUrl(logoUrl);
 
   return new ImageResponse(
@@ -46,13 +44,13 @@ export default async function Image({ params }: { params: { token: string } }) {
       fonts: [
         {
           name: "GeistMono",
-          data: await geistMonoRegular,
+          data: geistMonoRegular,
           style: "normal",
           weight: 400,
         },
         {
           name: "GeistSans",
-          data: await geistSansRegular,
+          data: geistSansRegular,
           style: "normal",
           weight: 400,
         },
